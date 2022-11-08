@@ -1,0 +1,86 @@
+-----PIZZARIA ---
+
+## criando banco
+create database pizzaria
+
+## criando as tabelas
+
+create table massas (
+id serial primary key, 
+nome varchar (30) not null
+);
+
+create table bordas (
+id serial primary key, 
+nome varchar (30) not null
+);
+
+create table sabores (
+id serial primary key, 
+nome varchar (30) not null
+);
+
+create table status (
+id serial primary key, 
+nome varchar (30) not null
+);
+
+create table pizzas (
+id serial primary key, 
+	id_bordas int references bordas (id), 
+	id_massas int references massass (id) 
+);
+
+
+create table pizza_sabores (
+id serial, 
+	id_pizza int, 
+	id_sabores int, 
+	foreign key (id_pizza) references pizzas (id), 
+	foreign key (id_sabores) references sabores (id), 
+	primary key (id)
+);
+
+
+create table pedidos (
+id serial primary key, 
+	id_status int constraint fk_status references status (id), 
+	id_pizzas int references pizzas (id) 
+
+);
+
+
+
+
+---- banco CLAMED -----
+
+## criando o banco de dados
+
+create database clamed
+
+### criando tabelas alunos em BD CLAMED
+
+create table alunos (
+id serial primary key, 
+nome varchar(50) not null, 
+cidade varchar(50) not null, 
+funcao varchar(50) not null
+);
+
+### inserindo dados na tabela alunos (doc preenchido por vocês no Google Drive)
+
+INSERT into alunos (nome, cidade, funcao) values ('Gabriel Guimarães', 'Florianópolis', 'Coordenador de TI'), 
+('Felipe Borba', 'Arraial do cabo', 'Programador de manutenção'), 
+('Higor Luiz', 'Joinville','Estudante de TI'),
+('Camila Borba Breda', 'Florianópolis', 'Engenheira Sanit. e Amb./Desenvolvedora Jr'),
+('Eloisa da Silva', 'Londrina', 'Farmacêutica e Analista de Suporte'),
+('Gabriele Schoenherr Pohlmann','Santa Cruz do Sul','Designer e Ilustradora'),
+('William Barbosa', 'São Paulo - SP', 'Farmácia'),
+('Michael Roberto da Luz Antunes da Silva','Florianópolis','Desenvolvedor'),
+('Marlon Renã Rech', 'Joinville', 'Ferramenteiro'),
+('Gabriel Ferraz','Itajai-SC','Atendente de Farmacia'),
+('Silas Silva', 'Curitiba', 'Missionário'), 
+('Paula Fernanda Kaminski', 'Itapema', 'Analista de RH'), 
+('Eduardo V Lemes', 'Itapema', 'Neurofisiologista');
+
+

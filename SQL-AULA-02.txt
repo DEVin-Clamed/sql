@@ -1,0 +1,88 @@
+seguimos falando do comando CREATE. Vimos a constraint (restrição) CHECK onde podemos delimitar os valores a serem inseridos na coluna. Exemplo:
+
+create table alunos (
+id serial, 
+	nome varchar(50) not null, 
+	cidade varchar(50) not null, 
+	funcao varchar(50) not null, 
+	idade integer constraint maior_18 check (idade > 18),
+	PRIMARY KEY(id)
+)
+
+nesse exemplo criamos uma restrição de nome maior_18 onde só é possível inserir alunos com idade maior que 18 anos. Podem confirmar fazendo os comandos INSERT ;)
+
+
+
+---inherits
+
+Outro conceito que falamos em aula dentro do comando CREATE é a herança. Onde é possível uma tabela herdar colunas de outra tabela. Exemplo:
+
+create table cidade (
+id serial primary key, 
+	nome varchar(20), 
+	populacao varchar(20)
+)
+
+create table capital (
+UF char(2)
+)inherits (cidade)
+
+agora vejam o conteúdo da tabela capital com o comando:
+select * from capital
+
+
+
+----INSERT PIZZARIA
+
+Após observar a sintaxe do comando INSERT nos slides, começamos a popular nosso banco de dados da pizzaria. 
+
+insert into sabores (nome) values ('calabresa');
+insert into sabores (nome) values ('4 queijos');
+insert into sabores (nome) values ('sensação');
+insert into sabores (nome) values ('bacon');
+
+insert into massas (nome) values ('tradicional');
+insert into massas (nome) values ('integral');
+insert into massas (nome) values ('temperada');
+
+insert into bordas (nome) values ('chocolate preto');
+insert into bordas (nome) values ('chocolate branco');
+insert into bordas (nome) values ('chocolate preto e branco');
+insert into bordas (nome) values ('cheedar'), ('catupiry'), ('requeijão');
+
+insert into status (nome) values ('recebido'), ('em preparação'), ('concluído'), ('saiu para entrega');
+
+
+insert into pizza (id_bordas, id_massas) values (1, 2), (2, 1);
+
+insert into pizza_sabor (id_pizzas, id_sabores) values (1, 2), (2, 1);
+
+insert into pedidos (id_pizzas, id_status) values (1, 3), (2, 4);
+
+
+fiquem na liberdade de cadastrar outros sabores, pizzas e pedidos.....
+
+
+---- INSERT (EXERCÍCIO DO TRELLO)
+
+fizemos dois exemplos do exercício de INSERT no trello:
+
+insert into aluno (nome_aluno, endereco, idade) values ('silas', 'rua 123', 30), ('ana paula', 'rua 432', 35)
+
+insert into professor (graduacao, nome_prof) values ('superior', 'gabriel')
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
