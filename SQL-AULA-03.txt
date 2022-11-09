@@ -1,0 +1,208 @@
+-----FK ON DELETE ON UPDATE
+
+- Vimos sobre atualização / exclusão de registros que possuem apontamento por chave estrangeira. No exemplo mostrado em aula, excluímos um registro na tabela pedidos que possuia apontamento da tabela pedido_itens. Com a exclusão, os registros da tabela pedido_itens que tinham como referencia o registro excluído de pedidos também foram excluídos. Segue o CREATE das tabelas :
+
+create table pedidos (
+	id SERIAL PRIMARY KEY,
+	data TIMESTAMP NOT NULL DEFAULT current_timestamp,
+	cliente VARCHAR(255) NOT NULL,
+	valor_total NUMERIC NOT NULL DEFAULT 0
+);
+
+-- observem a constraint ON DELETE CASCADE ON UPDATE CASCADE na FK
+
+create table pedido_itens (
+	id SERIAL PRIMARY KEY,
+	pedido_id int NOT NULL,
+	produto_titulo VARCHAR(80) NOT NULL,
+	descricao VARCHAR(255) NOT NULL,
+	valor NUMERIC,
+	FOREIGN KEY (pedido_id) REFERENCES pedidos (id) ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+-- agora vamos inserir um registro em cada tabela:
+
+INSERT into pedidos (data, cliente, valor_total) values ('07/11/2022', 'gabriel', 100) 
+
+INSERT into pedido_itens (pedido_id, produto_titulo, descricao, valor) values (1, 'parafuso', 'blablabla', 10) 
+
+-- vamos listar as tabelas (executem um SELECT por vez)
+
+select * from pedidos
+select * from pedido_itens
+
+-- vamos excluir o registro de id = 1 da tabela pedidos
+delete from pedidos where id = 1
+
+-- o que aconteceu com a tabela pedido_itens após exclusão? 
+select * from pedido_itens
+
+-- vocês podem fazer novas insercões e testar agora a atualização de chave e ver se a atualização será replicada em pedido_itens:
+ 
+update pedidos
+set id = 4
+where id = 2
+
+-- aqui é um exemplo de em caso de exclusão de um registro que possuia apontamento por FK, setar valor como NULL ao invés de excluir em cascata. Veja como fica: 
+ 
+CREATE TABLE some_child (
+    parent_id integer references parent(id) on delete set null
+);
+
+
+--- ALTER ---
+
+### COMANDO ALTER ###
+
+vimos algumas possibilidades de uso do comando ALTER. Como remover uma coluna de uma tabela:
+
+alter table alunos drop idade
+
+- adicionar coluna: 
+
+alter table alunos add idade int
+
+- alterar tipo de dado da tabela (agora no banco da pizzaria):
+
+alter table pedidos alter column data_pedido type varchar(10)
+
+
+-----adicionar chave estrangeira após tabela criada:-----
+
+
+alter table pedido_itens 
+add constraint fk_pedidos_pedidosItens2 foreign key(pedido_id) references pedidos (id) on delete cascade
+
+- adicionando constraints a tabelas já criadas, como exemplo checar se data inserida é após de 01/01/2020:
+
+ALTER TABLE pedidos add constraint data check (data_pedido > '01/01/2020');
+
+-- adicionar outra constraint para em caso de usencia de data, colocar valor padrão de 08/11/2022:
+
+ALTER TABLE pedidos ALTER COLUMN data_pedido SET DEFAULT '08/11/2022';
+
+-- vamos testar?
+insert into pedidos (id_status, id_pizzas) values (2, 3)
+
+select * from pedidos
+
+
+-----update----
+
+### COMANDO UPDATE ###
+
+# atualizando a coluna data_pedido para '26/07/2022' de todos os registros da tabela pedidos 
+
+update pedidos
+set data_pedido = '26/07/2022'
+
+# atualizando a coluna data_pedido para '26/07/2022' apenas do registro id = 2 da tabela pedidos
+
+update pedidos
+set data_pedido = '26/07/2022'
+where id = 2
+
+-- EXERCÍCIO 6 DO TRELLO
+
+update aluno
+set idade = 27
+where id = 3
+ 
+ou
+
+update aluno
+set idade = 27
+where nome_aluno = 'Luiz Ricardo Soares'
+
+-- EXERCÍCIO 7 DO TRELLO
+update aluno
+set endereco = 'Av. Norte, 350, Recife-PE'
+where id = 2
+
+#### COMANDO DROP #####
+
+usado para excluir tabelas inteiras ou bancos de dados, exemplo:
+drop table alunos
+
+- lembrando que a tabela a ser excluída não pode ter apontamento de outra tabela ativa. Para isso é necessário excluir fk que aponte para tabela a ser excluída e aí excluir. 
+
+drop database pizzaria
+
+
+
+#### COMANDO DELETE #####
+
+usado para remover LINHAS das tabelas, e não a tabela por completa. Exemplo:
+
+delete from alunos 
+where id = 5
+
+apenas o aluno com ID 5 será excluído da tabela.
+
+
+#### COMANDO SELECT #####
+
+# Listando registro fazendo filtro pelo id (trazendo um registro específico, e não a tabela com todas as linhas)
+
+select * from alunos where id = 3
+
+# listando apenas as colunas especificadas no select. o "*" nos retorna todas as colunas da tabela
+
+select nome from alunos where id = 3
+
+# Listando todos os alunos de Florianópolis
+
+select * from alunos where cidade =  'Florianópolis'
+
+# ordenando os registros da tabela pelo nome de forma alfabética
+select * from alunos order by nome asc
+
+# filtro com cláusula like para fitro com string 
+
+select * from alunos where cidade not like 'Flo%'
+select nome from alunos where cidade like 'Flo%'
+
+
+--- PARA MAIS EXEMPLOS CRIAMOS A TABELA EMPREGADOS.... SEGUE COMANDOS DE CRIAÇÃO:
+
+---- EMPREGADOS
+
+create table empregado (
+	id SERIAL, 
+	nome varchar(30), 
+	salario int,
+	supervisor varchar(30), 
+	primary key (id)
+);
+
+insert into empregado (nome, salario, supervisor) values ('diogo', 2000, 'carlos'), 
+('gabriel', 5000, 'joao'), ('sérgio', 15000, 'patrick'), ('ana', 7500, 'carlos'), 
+('abigail', 3000, 'joao'), ('joana', 24000, 'patrick'), ('felipe', 2300, 'carlos'), 
+('edson', 1500, 'joao'), ('roberta', 6000, 'patrick');
+
+
+# operadores lógicos AND, OR e NOT
+
+select * from empregado
+where salario > 2000 and supervisor = 'patrick'
+
+# falamos das funções de agregação, como SUM(), COUNT() ETC..
+
+- soma de todos os salários 
+select SUM(salario) from empregados
+
+- quantos empregados na empresa?
+
+select COUNT(id) from empregados
+
+
+
+
+# exercício feito em aula: dado um número de pizza, saber o nome da borda, nome da massa e sabores escolhidos. 
+
+select  p.id as NumPizza, b.nome as NomeBorda, m.nome as Nome_Massa, sabores.nome
+from pizzas p, bordas b, massas m, pizza_sabores, sabores
+where p.id_massas = m.id and 
+p.id_bordas = b.id and
+pizza_sabores.id_pizza = p.id and
+pizza_sabores.id_sabores = sabores.id
