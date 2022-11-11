@@ -1,0 +1,141 @@
+####  GROUP BY (GROUP BY AGRUPA REGISTROS SEMELHANTES)
+
+select min(salario), max(salario), avg(salario), supervisor
+from empregado
+group by supervisor
+
+agora como filtrar médias salariais maiores de 3500?
+
+select min(salario), max(salario), avg(salario), supervisor
+from empregado
+group by supervisor
+HAVING avg(salario) > 3500
+
+## exemplos de bancos para testarmos os próximos comandos:
+### EXEMPLO A E B
+
+create table a (
+id serial primary key ,
+nome varchar(20)
+)
+
+create table b (
+id serial primary key ,
+nome varchar(20)
+)
+
+insert into a (nome) values ('fernanda'), ('Josefa'), ('Luiz'), ('fernando')
+
+insert into b (nome) values ('Carlos'), ('Manoel'), ('Luiz'), ('fernando')
+
+
+
+### EXEMPLO X E Y
+
+create table x (
+pk int, 
+value varchar(2)
+
+);
+
+
+create table y (
+pk int, 
+value varchar(2)
+
+);
+
+insert into x (pk, value) values (1, 'X1'), (10, 'X8'), (2, 'X3'), (3, 'X3'), (4, 'X7'), (5, 'X6'), (6, 'X4'), (7, 'X5')
+
+insert into y (pk, value) values (1, 'Y1'), (11, 'Y8'), (2, 'Y2'), (3, 'Y3'), (6, 'Y4'), (7, 'Y5'), (8, 'Y6'), (9, 'Y7')
+
+
+
+JOIN
+
+# INNER JOIN  - REGISTROS SEMELHANTES EM A E B. OU SEJA, A INTERSECÇÃO, O QUE É COMUM EM AMBOS
+
+select * from a inner join b on a.nome = b.nome
+
+mesma coisa que:
+
+select * from a, b where a.nome = b.nome
+
+# LEFT JOIN  - TODOS OS REGISTROS DA TABELA DA ESQUERDA, TENDO OU NÃO RELACIONAMENTO COM TABELA DA DIREITA. (COMPARE O RESULTADO COM AS TABELAS DE A E B E VEJA AQUELES QUE SÃO COMUNS E OS QUE NÃO SÃO)
+
+select * from a left join b on a.nome = b.nome
+
+
+# RIGHT JOIN  - TODOS OS REGISTROS DA TABELA DA DIREITA TENDO OU NÃO RELACIONAMENTO COM TABELA DA ESQUERDA
+
+select * from a right join b on a.nome = b.nome
+
+# LEFT JOIN EXCLUDENTE - APENAS OS REGISTROS DA ESQUERDA QUE NAO POSSUEM RELACIONAMENTO COM A DIREITA
+
+select * from a left join b on a.nome = b.nome where b.nome is null
+
+
+# RIGHT JOIN EXCLUDENTE - APENAS OS REGISTROS DA DIREITA QUE NAO POSSUEM RELACIONAMENTO COM A ESQUERDA
+
+select * from a right join b on a.nome = b.nome where a.nome is null
+
+
+# FULL JOIN - TODOS OS REGISTROS DE A E B QUE POSSUEM OU NÃO RELACIONAMENTOS
+
+select * from a full outer join b on a.nome = b.nome
+
+
+# FULL JOIN EXCLUDENTE - TODOS OS REGISTROS DE A E B QUE NÃO POSSUEM RELACIONAMENTOS ENTRE SI
+
+select * from a full outer join b on a.nome = b.nome where a.nome is null or b.nome is null
+
+
+## exercício em aula pizzaria:
+
+
+-- sabores que nao foram associados a uma pizza:
+ 
+select *
+from pizza_sabores
+right join sabores on pizza_sabores.id_sabores = sabores.id
+where pizza_sabores.id_pizza is null
+
+-- status que possuem ou não pedidos associados:
+
+select *
+from pedidos right join status on pedidos.id_status = status.id
+
+
+
+# listando a quantidade de pedidos para cada status 
+
+select count(pedidos.id), status.nome
+from pedidos inner join status on pedidos.id_status = status.id
+group by status.nome
+
+
+#### UNION ###  (as tabelas em union devem ter mesmo número de colunas, mesma ordem das colunas e mesmo tipo de dados para cada coluna)
+
+# todos os registros de a e b fazendo um DISTINCT com repetidos: 
+
+select * from a
+union
+select * from b
+
+#### INTERSECT ### (as tabelas em union devem ter mesmo número de colunas, mesma ordem das colunas e mesmo tipo de dados para cada coluna)
+
+# todos os registros comuns de a e b:
+
+select * from a
+intersect
+select * from b
+
+#### EXCEPT ### (as tabelas em union devem ter mesmo número de colunas, mesma ordem das colunas e mesmo tipo de dados para cada coluna)
+
+# todos os registros de a que não possuem relacionamento com b:
+
+select * from a
+except
+select * from b
+
+

@@ -1,0 +1,126 @@
+
+----VIEW---
+
+create view view_pedidos
+as 
+select pedidos.id as numeroPedido, status.nome as status from pedidos, status 
+where pedidos.id_status = status.id
+
+create or replace view view_pedidos
+as
+select pedidos.id as numeroPedido, status.nome as status from pedidos, status 
+where pedidos.id_status = status.id and status.nome = 'Concluído';
+
+----MERGE------
+
+CREATE TABLE SourceTable
+(
+  Col1 INT NOT NULL PRIMARY KEY,
+  Col2 VARCHAR(20) NOT NULL
+);
+
+CREATE TABLE TargetTable
+(
+  Col1 INT NOT NULL PRIMARY KEY,
+  Col2 VARCHAR(20) NOT NULL
+);
+
+INSERT INTO SourceTable (Col1, Col2)
+VALUES
+(2, 'Source2'),
+(3, 'Source3'),
+(4, 'Source4');
+
+INSERT INTO TargetTable (Col1, Col2)
+VALUES
+(1, 'Target1'),
+(2, 'Target2'),
+(3, 'Target3');
+
+
+MERGE INTO TargetTable as TGT
+USING SourceTable as SRC ON TGT.Col1 = SRC.Col1
+WHEN MATCHED
+  THEN UPDATE SET Col2 = SRC.Col2
+WHEN NOT MATCHED
+  THEN INSERT (Col1, Col2)
+  VALUES (SRC.Col1, SRC.Col2);
+
+select * from SourceTable;
+
+
+
+
+-------FUNÇÃO STRING----
+
+SELECT CHAR_LENGTH(nome), nome from alunos where id = 1
+
+select substring(nome, 1, 4), cidade from alunos
+
+select replace (cidade, 'nópolis', 'xxx' ), cidade from alunos
+
+select POSITION('rianópo' in cidade) from alunos
+
+select  substring (cidade,  1,  (POSITION('rianópo' in cidade) - 1) ) from alunos where cidade = 'Florianópolis'
+
+
+documentação oficial: https://www.postgresql.org/docs/current/functions-string.html
+
+
+---FUNÇÃO PARA DATA-----
+
+select date '27/07/2022' + 2
+
+-- apenas se coluna data_pedido for do tipo date
+select date_part('day', data_pedido) from pedidos
+
+select date '25/07/2022' - '27/07/2022';
+
+Obtendo o dia da data atual:
+
+SELECT DATE_PART('DAY', CURRENT_TIMESTAMP) AS dia;
+
+Obtendo o mês da data atual:
+
+SELECT DATE_PART('MONTH', CURRENT_TIMESTAMP) AS mes;
+
+
+select to_date('1983-07-18', 'YYYY-MM-DD')
+
+select to_date('19830718', 'YYYYMMDD')
+
+
+## EXERCÍCIO 4 DO TRELLO
+
+create table produto (
+id serial primary key, 
+nome varchar(30) not null, 
+preco int check (preco > 50) , 
+tamanho varchar(3)  
+)
+
+create table produto_pedidos (
+id serial  primary key,
+id_produto int references produto (id), 
+id_pedidos int references pedidos (id)
+)
+
+create table pedidos (
+id serial primary key,
+data_pedido date not null, 
+forma_pagamento varchar(20) not null,
+logradouro varchar(20) not null, 
+numero varchar(20) not null, 
+cidade varchar(20) not null, 
+uf char(2) not null, 
+pais varchar(20) not null
+)
+
+
+## EXERCÍCIO 5 DO TRELLO
+
+select avg (idade)
+from aluno
+
+
+
